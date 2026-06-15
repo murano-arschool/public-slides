@@ -1,0 +1,20 @@
+# OS / エディタ
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# 依存・ビルド成果物
+node_modules/
+dist/
+build/
+
+# 秘密情報（public リポジトリなので絶対にコミットしない）
+.env
+.env.*
+*.key
+*.pem
+secrets/
+*.secret
