@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>バイブコーディングで、子どもの学びはどう変わるのか — 導入の実践とリアル —</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F5F0;
+    --ink:#181A20;
+    --blue:#2B49FF;
+    --yellow:#FFD23F;
+    --gray:#878C96;
+    --line:#D8D6CE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;background:#0E0F12;overflow:hidden;}
+  body{font-family:'Noto Sans JP',sans-serif;color:var(--ink);}
+
+  /* ---- stage : 1600x1000 (16:10) を画面サイズに合わせて scale ---- */
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
+  #stage{width:1600px;height:1000px;position:relative;background:var(--paper);
+         box-shadow:0 30px 80px rgba(0,0,0,.5);transform-origin:center center;overflow:hidden;}
+
+  .slide{position:absolute;inset:0;padding:84px 110px 90px;display:none;flex-direction:column;}
+  .slide.active{display:flex;animation:fadein .35s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion: reduce){.slide.active{animation:none;}}
+
+  /* ---- shared parts ---- */
+  h1,h2,.display{font-family:'Shippori Mincho B1',serif;font-weight:700;line-height:1.3;}
+  .slide h2{font-size:56px;letter-spacing:.02em;margin-bottom:36px;}
+  .slide h2 em{font-style:normal;background:linear-gradient(transparent 62%,var(--yellow) 62%);}
+
+  .body-l{font-size:30px;line-height:1.9;font-weight:500;}
+  .note{font-size:20px;color:var(--gray);}
+
+  .footer{position:absolute;left:110px;right:110px;bottom:34px;display:flex;
+          justify-content:space-between;align-items:center;
+          font-family:'IBM Plex Mono',monospace;font-size:16px;color:var(--gray);}
+  .footer .bar{flex:1;height:1px;background:var(--line);margin:0 24px;}
+
+  .dark{background:var(--ink);color:var(--paper);}
+  .dark .footer{color:#5A5E68;}
+  .dark .footer .bar{background:#2E3138;}
+
+  .card{background:#FFFFFF;border:1px solid var(--line);border-radius:14px;padding:36px 44px;}
+  .tag{display:inline-block;align-self:flex-start;font-family:'IBM Plex Mono',monospace;font-size:17px;
+       color:var(--blue);border:1px solid var(--blue);border-radius:999px;
+       padding:5px 18px;margin-bottom:20px;letter-spacing:.05em;}
+  .tag.fill{background:var(--blue);color:#fff;}
+  .tag.ink{color:var(--ink);border-color:var(--ink);}
+
+  .card-head{font-family:'Shippori Mincho B1',serif;font-weight:700;font-size:36px;
+             letter-spacing:.02em;margin-bottom:22px;padding-bottom:14px;
+             border-bottom:3px solid var(--blue);display:flex;align-items:baseline;gap:14px;}
+
+  ul.clean{list-style:none;}
+  ul.clean li{position:relative;padding-left:34px;margin-bottom:18px;font-size:24px;line-height:1.7;}
+  ul.clean li::before{content:'';position:absolute;left:0;top:15px;width:16px;height:3px;background:var(--blue);}
+  ul.clean.on-dark li::before{background:var(--yellow);}
+
+  /* ---- スキル・レッスン表（前回講演より） ---- */
+  table.skill{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);
+              font-size:21px;}
+  table.skill th{background:var(--ink);color:var(--paper);font-weight:700;padding:14px 24px;
+                 text-align:left;font-size:20px;letter-spacing:.04em;}
+  table.skill td{padding:8px 24px;border-top:1px solid var(--line);line-height:3;}
+
+  /* ---- 下向き矢印・帯 ---- */
+  .down-arrow{text-align:center;color:var(--blue);font-size:32px;font-weight:900;line-height:1;margin:18px 0;}
+  .band-dark{background:var(--ink);color:var(--paper);border-radius:16px;padding:40px 60px;text-align:center;}
+  .marker{background:linear-gradient(transparent 58%,rgba(255,210,63,.55) 58%);}
+  .dark .marker,.band-dark .marker{background:linear-gradient(transparent 58%,rgba(255,210,63,.45) 58%);}
+
+  /* ---- page3 コースマトリックス（arschool.co.jp の .tc-matrix を移植・拡大） ---- */
+  .tc-matrix{position:relative;background:#fff;border:1px solid #d4d4d4;border-radius:12px;padding:40px 60px 50px;}
+  .tc-matrix-deco{position:absolute;display:flex;gap:12px;}
+  .tc-matrix-deco span{width:0;height:0;}
+  .tc-matrix-deco--tr{right:-8px;top:-22px;}
+  .tc-matrix-deco--bl{left:-10px;bottom:-16px;}
+  .tc-tri-right{border-left:20px solid #7fc349;border-top:12px solid transparent;border-bottom:12px solid transparent;}
+  .tc-tri-down{border-top:15px solid #ee3d96;border-left:10px solid transparent;border-right:10px solid transparent;margin-top:18px;}
+  .tc-tri-up{border-bottom:15px solid #299fd0;border-left:10px solid transparent;border-right:10px solid transparent;}
+  .tc-matrix-grid{display:grid;grid-template-columns:210px 1fr 1fr;grid-template-rows:100px 200px 105px 105px;}
+  .tc-matrix-head{display:flex;align-items:center;justify-content:center;grid-row:1;}
+  .tc-matrix-head--ai{grid-column:2;}
+  .tc-matrix-head--prog{grid-column:3;}
+  .tc-pill{font-weight:700;color:#fff;border-radius:999px;}
+  .tc-pill--ai{display:inline-flex;align-items:baseline;background:#ee3d96;padding:12px 36px;font-size:26px;}
+  .tc-pill--ai .tc-pill-note{font-size:17px;font-weight:400;margin-left:4px;}
+  .tc-pill--prog{background:#299fd0;padding:12px 36px;font-size:26px;}
+  .tc-matrix-label{grid-column:1;border-top:1px dashed #ccc;border-right:1px dashed #ccc;
+                   display:flex;align-items:center;gap:14px;font-weight:700;font-size:27px;padding-left:10px;}
+  .tc-matrix-label::before{content:"";width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;}
+  .tc-matrix-label--green{grid-row:2;}
+  .tc-matrix-label--green::before{border-left:15px solid #7fc349;}
+  .tc-matrix-label--pink{grid-row:3;}
+  .tc-matrix-label--pink::before{border-left:15px solid #ee3d96;}
+  .tc-matrix-label--blue{grid-row:4;}
+  .tc-matrix-label--blue::before{border-left:15px solid #299fd0;}
+  .tc-matrix-cell{border-top:1px dashed #ccc;display:flex;}
+  .tc-matrix-cell .tc-box{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+                          border-radius:10px;border:1.5px solid;text-align:center;font-weight:700;}
+  .tc-matrix-cell .tc-cell-note{font-weight:700;font-size:24px;color:#3a3a3a;line-height:1.55;}
+  .tc-matrix-cell--basic{grid-column:2/4;grid-row:2;padding:20px 60px;}
+  .tc-matrix-cell--basic .tc-box{background:#f6fcff;border-color:#299fd0;color:#299fd0;font-size:32px;}
+  .tc-matrix-cell--aiapp{grid-column:2;grid-row:3/5;padding:20px 48px;}
+  .tc-matrix-cell--aiapp .tc-box{background:#f4f3ff;border-color:#665ceb;color:#665ceb;font-size:28px;}
+  .tc-matrix-cell--expert{grid-column:3;grid-row:3/5;border-left:1px dashed #ccc;padding:20px 48px;}
+  .tc-matrix-cell--expert .tc-box{background:#fff0f0;border-color:#e23434;color:#e23434;font-size:28px;}
+
+  /* ---- page5 3つの力（arschool.co.jp/courses/programming の .skills をベースにデッキ書体で） ---- */
+  .sk-h{font-family:'Shippori Mincho B1',serif;font-weight:700;font-size:50px;line-height:1.4;
+        letter-spacing:.02em;text-align:center;margin-bottom:26px;}
+  .skills-list{display:flex;flex-direction:column;gap:26px;flex:1;justify-content:center;}
+  .skill-row{display:grid;grid-template-columns:140px 1fr;gap:40px;align-items:center;
+             background:#fff;border:1px solid #e9e4d7;border-radius:16px;padding:36px 44px;}
+  .skill-row .snum{font-family:'Shippori Mincho B1',serif;font-weight:700;font-size:76px;line-height:1;
+                   color:#2d96c3;opacity:.9;}
+  .skill-row h3{font-weight:900;font-size:32px;margin-bottom:16px;}
+  .skill-tags{display:flex;flex-wrap:wrap;gap:10px;}
+  .skill-tag{font-weight:700;font-size:17px;color:#1f7a9f;
+             background:#e3f2f9;padding:6px 18px;border-radius:30px;}
+
+  /* クリックで後から表示する要素 */
+  .fragment{opacity:0;transform:translateY(12px);transition:opacity .4s ease,transform .4s ease;
+            pointer-events:none;}
+  .fragment.revealed{opacity:1;transform:none;pointer-events:auto;}
+  @media (prefers-reduced-motion: reduce){.fragment{transition:none;}}
+</style>
+</head>
+<body>
+
+<div id="viewport">
+<div id="stage">
+
+  <!-- ============ 1. 表紙 ============ -->
+  <section class="slide" data-label="cover">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+      <h1 style="font-size:84px;letter-spacing:.01em;line-height:1.32;">
+        バイブコーディングで、<br>子どもの学びは<span style="color:var(--blue);">どう変わるのか</span>
+      </h1>
+      <div style="margin-top:70px;display:flex;align-items:flex-end;justify-content:space-between;">
+        <div>
+          <div class="note" style="margin-bottom:10px;">登壇者</div>
+          <div style="font-size:32px;font-weight:700;">アルスクール株式会社　代表　村野 智浩</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:24px;color:var(--blue);">2026.7.27 (Mon)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. 登壇者 ============ -->
+  <section class="slide" data-label="speaker">
+    <h2 style="margin-bottom:30px;">登壇者</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:34px;flex:1;min-height:0;">
+      <div class="card" style="display:flex;flex-direction:column;padding:32px 40px;">
+        <div class="tag">COMPANY</div>
+        <div class="card-head" style="font-size:31px;justify-content:space-between;align-items:center;">
+          <span>AI・プログラミング教室<br>アルスクール</span>
+          <img src="img/arschool_logo.png" alt="アルスクール ロゴ" style="height:56px;width:auto;">
+        </div>
+        <img src="img/kv-lesson.jpg" alt="アルスクールのレッスンの様子" style="width:100%;flex:1;min-height:0;object-fit:cover;border-radius:10px;border:1px solid var(--line);">
+        <div style="display:flex;gap:18px;margin-top:22px;">
+          <div style="flex:1;text-align:center;border:1px solid var(--line);border-radius:10px;padding:16px 10px;">
+            <div class="display" style="font-size:40px;color:var(--blue);line-height:1.15;">6<span style="font-size:22px;">校</span></div>
+            <div class="note" style="font-size:16px;margin-top:6px;line-height:1.5;">東京(3校)<br>大阪・福岡・オンライン</div>
+          </div>
+          <div style="flex:1;text-align:center;border:1px solid var(--line);border-radius:10px;padding:16px 10px;">
+            <div class="display" style="font-size:40px;color:var(--blue);line-height:1.15;">200<span style="font-size:22px;">名+</span></div>
+            <div class="note" style="font-size:16px;margin-top:6px;line-height:1.5;">生徒数</div>
+          </div>
+          <div style="flex:1;text-align:center;border:1px solid var(--line);border-radius:10px;padding:16px 10px;">
+            <div class="display" style="font-size:40px;color:var(--blue);line-height:1.15;">7 : 3</div>
+            <div class="note" style="font-size:16px;margin-top:6px;line-height:1.5;">小学生7割<br>中学生3割</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;padding:32px 40px;">
+        <div class="tag">SPEAKER</div>
+        <div style="display:flex;align-items:center;gap:28px;margin:6px 0 26px;">
+          <img src="img/murano.jpg" alt="村野智浩" style="width:118px;height:118px;border-radius:50%;object-fit:cover;border:1px solid var(--line);flex:0 0 auto;">
+          <div>
+            <div class="display" style="font-size:38px;">村野 智浩</div>
+            <div style="font-size:20px;color:var(--blue);font-weight:700;margin-top:8px;letter-spacing:.04em;">アルスクール株式会社 代表取締役</div>
+          </div>
+        </div>
+        <ul class="clean" style="margin-top:6px;">
+          <li style="font-size:22px;color:#4A4E58;">東京大学工学部卒業。2児の父。</li>
+          <li style="font-size:22px;color:#4A4E58;">アクセンチュアやチームラボで活躍のエンジニア</li>
+          <li style="font-size:22px;color:#4A4E58;">各社でCTOや技術顧問、取締役などを歴任</li>
+          <li style="font-size:22px;color:#4A4E58;">モンテッソーリ教育、探究学習、STEAM教育</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. アルスクールのコース（arschool.co.jp の学年×コースマトリックス） ============ -->
+  <section class="slide" data-label="courses">
+    <h2 style="margin-bottom:0;">アルスクールのコース</h2>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+      <div class="tc-matrix">
+        <div class="tc-matrix-deco tc-matrix-deco--tr" aria-hidden="true">
+          <span class="tc-tri-right"></span>
+          <span class="tc-tri-down"></span>
+        </div>
+        <div class="tc-matrix-deco tc-matrix-deco--bl" aria-hidden="true">
+          <span class="tc-tri-up"></span>
+        </div>
+        <div class="tc-matrix-grid">
+          <div class="tc-matrix-head tc-matrix-head--ai">
+            <span class="tc-pill tc-pill--ai">AI<span class="tc-pill-note">（バイブコーディング）</span></span>
+          </div>
+          <div class="tc-matrix-head tc-matrix-head--prog">
+            <span class="tc-pill tc-pill--prog">プログラミング</span>
+          </div>
+
+          <div class="tc-matrix-label tc-matrix-label--green">小学生</div>
+          <div class="tc-matrix-cell tc-matrix-cell--basic">
+            <div class="tc-box">ベーシックコース
+              <span class="tc-cell-note">AI：バイブコーディング（アルスタジオV）<br>プログラミング：Scratch</span>
+            </div>
+          </div>
+
+          <div class="tc-matrix-label tc-matrix-label--pink">中学生</div>
+          <div class="tc-matrix-cell tc-matrix-cell--aiapp">
+            <div class="tc-box">AIアプリコース
+              <span class="tc-cell-note">バイブコーディング<br>（VSCode + GitHub Copilot）</span>
+            </div>
+          </div>
+          <div class="tc-matrix-cell tc-matrix-cell--expert">
+            <div class="tc-box">エキスパートコース
+              <span class="tc-cell-note">プログラミング：JavaScript</span>
+            </div>
+          </div>
+
+          <div class="tc-matrix-label tc-matrix-label--blue">高校生</div>
+        </div>
+      </div>
+      <p style="margin-top:22px;text-align:right;font-size:22px;font-weight:700;color:#4A4E58;">在校生限定のイノベーターコースもあります</p>
+    </div>
+  </section>
+
+  <!-- ============ 4. もはや、コードはAIが書いている ============ -->
+  <section class="slide" data-label="evidence">
+    <h2 style="margin-bottom:28px;">もはや、コードはAIが書いている</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;">
+      <div class="card" style="padding:28px 40px;">
+        <div class="card-head" style="font-size:30px;margin-bottom:14px;padding-bottom:10px;">Anthropic</div>
+        <p class="body-l" style="font-size:25px;line-height:1.7;">「Claude」の新規プログラムコードの
+          <span class="display" style="font-size:54px;color:var(--blue);">80%以上</span>を、
+          Claude自身が記述している。</p>
+      </div>
+      <div class="card" style="padding:28px 40px;">
+        <div class="card-head" style="font-size:30px;margin-bottom:14px;padding-bottom:10px;">私自身</div>
+        <p class="body-l" style="font-size:25px;line-height:1.7;"><span class="display" style="font-size:54px;color:var(--blue);">99%</span>、AIによる開発。</p>
+      </div>
+    </div>
+    <div class="fragment" style="margin-top:auto;background:var(--ink);color:var(--paper);border-radius:16px;padding:56px 60px;">
+      <p style="font-size:38px;font-weight:700;line-height:1.7;">
+        保護者として、子どもに<br>
+        <span class="marker">「AI時代でもプログラミングを学べ」<br>と強く言えますか？</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 5. 3つの力（arschool.co.jp/courses/programming の .skills セクション） ============ -->
+  <section class="slide" data-label="three-powers">
+    <div class="sk-h">プログラミング・AI教育の価値</div>
+    <div class="skills-list">
+      <div class="skill-row">
+        <div class="snum">01</div>
+        <div>
+          <h3>AIがうまくなる。ITに強くなる。</h3>
+          <div class="skill-tags">
+            <span class="skill-tag">AI</span>
+            <span class="skill-tag">IT</span>
+            <span class="skill-tag">プログラミング</span>
+            <span class="skill-tag">テクノロジー</span>
+          </div>
+        </div>
+      </div>
+      <div class="skill-row">
+        <div class="snum">02</div>
+        <div>
+          <h3>思考力、言語力。頭が良くなる。</h3>
+          <div class="skill-tags">
+            <span class="skill-tag">論理的思考</span>
+            <span class="skill-tag">言語化</span>
+            <span class="skill-tag">問題解決</span>
+            <span class="skill-tag">理系センス</span>
+          </div>
+        </div>
+      </div>
+      <div class="skill-row">
+        <div class="snum">03</div>
+        <div>
+          <h3>やりきる力、創造性。元気になる。</h3>
+          <div class="skill-tags">
+            <span class="skill-tag">創造性</span>
+            <span class="skill-tag">粘り強さ</span>
+            <span class="skill-tag">自走力</span>
+            <span class="skill-tag">やりきる力</span>
+            <span class="skill-tag">精神的な強さ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5-2. プログラミング教育とAI教育の価値 ============ -->
+  <section class="slide" data-label="value-statement" style="align-items:center;justify-content:center;">
+    <p class="display" style="font-size:64px;line-height:2;text-align:center;">
+      プログラミング教育の価値は変わらない。<br>
+      でも、<span style="background:linear-gradient(transparent 62%,var(--yellow) 62%);">AI教育もすごい価値がある。</span>
+    </p>
+  </section>
+
+  <!-- ============ 6. AI導入までのプロセス ============ -->
+  <section class="slide" data-label="process">
+    <h2 style="font-size:48px;">アルスクールでAI導入まで</h2>
+    <div style="display:grid;grid-template-columns:1fr 90px 1.15fr;gap:0;align-items:stretch;flex:1;min-height:0;">
+      <div style="display:flex;flex-direction:column;gap:22px;justify-content:center;">
+        <div class="card" style="border-left:7px solid var(--ink);border-radius:12px;padding:24px 30px;">
+          <div style="font-size:25px;font-weight:900;margin-bottom:8px;">年齢の壁</div>
+          <p style="font-size:21px;line-height:1.7;color:#4A4E58;">13歳未満が使えない。</p>
+        </div>
+        <div class="card" style="border-left:7px solid var(--ink);border-radius:12px;padding:24px 30px;">
+          <div style="font-size:25px;font-weight:900;margin-bottom:8px;">AIでできることが広すぎ</div>
+          <p style="font-size:21px;line-height:1.7;color:#4A4E58;">画像生成、動画、スライド作成・・・何を教えるべきか絞りきれない。</p>
+        </div>
+        <div class="card" style="border-left:7px solid var(--ink);border-radius:12px;padding:24px 30px;">
+          <div style="font-size:25px;font-weight:900;margin-bottom:8px;">AIの進化</div>
+          <p style="font-size:21px;line-height:1.7;color:#4A4E58;">去年のツールがもう使えない。プロンプトのテクニックが不要に。</p>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;">
+        <div style="width:0;height:0;border-top:26px solid transparent;border-bottom:26px solid transparent;border-left:34px solid var(--blue);"></div>
+      </div>
+      <div class="card" style="border:2px solid var(--blue);border-radius:16px;padding:40px 50px;align-self:center;">
+        <div class="display" style="font-size:38px;margin-bottom:28px;">まとめて<span style="color:var(--blue);">アルスタジオV</span>で解決</div>
+        <ul class="clean" style="margin-bottom:30px;">
+          <li style="font-size:25px;margin-bottom:14px;">13歳未満でもOK</li>
+          <li style="font-size:25px;margin-bottom:14px;">バイブコーディングに特化</li>
+          <li style="font-size:25px;margin-bottom:0;">最先端のAIを追う必要はない</li>
+        </ul>
+        <div style="border-top:1px solid var(--line);padding-top:26px;font-size:27px;font-weight:700;line-height:1.8;">ツールの使い方ではなく、<br><span class="marker">「AIを使って価値創造」</span>を学ぶ。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7-2. アルスタジオVの紹介（デモへの切り替え） ============ -->
+  <section class="slide" data-label="ars-studio-v-demo">
+    <h2>アルスタジオVの紹介</h2>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;">
+      <p class="display" style="font-size:56px;letter-spacing:.04em;">別画面でデモします</p>
+    </div>
+  </section>
+
+  <!-- ============ 7-3. アルスタジオVの特徴 ============ -->
+  <section class="slide" data-label="ars-studio-v-features">
+    <h2 style="margin-bottom:0;">アルスタジオVの特徴</h2>
+    <div style="flex:1;display:flex;align-items:center;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;width:100%;align-items:stretch;">
+        <div class="card" style="position:relative;overflow:hidden;border-top:6px solid var(--blue);padding:36px 38px;display:flex;flex-direction:column;">
+          <span class="display" style="position:absolute;top:12px;right:20px;font-size:120px;color:var(--blue);opacity:.08;line-height:1;">01</span>
+          <div class="tag" style="margin-bottom:20px;">FEATURE 01</div>
+          <div class="display" style="font-size:29px;line-height:1.5;min-height:87px;margin-bottom:18px;padding-bottom:16px;border-bottom:3px solid var(--blue);">はじめての<br>バイブコーディングに最適</div>
+          <ul class="clean" style="margin-top:6px;">
+            <li style="font-size:21px;margin-bottom:16px;"><strong>HTML/JS</strong>による開発に特化</li>
+            <li style="font-size:21px;margin-bottom:16px;"><strong>音声入力</strong>、<strong>バージョン保存</strong>など</li>
+            <li style="font-size:21px;margin-bottom:0;"><strong>開発と相談、画像生成</strong>を分ける</li>
+          </ul>
+        </div>
+        <div class="card" style="position:relative;overflow:hidden;border-top:6px solid var(--blue);padding:36px 38px;display:flex;flex-direction:column;">
+          <span class="display" style="position:absolute;top:12px;right:20px;font-size:120px;color:var(--blue);opacity:.08;line-height:1;">02</span>
+          <div class="tag" style="margin-bottom:20px;">FEATURE 02</div>
+          <div class="display" style="font-size:29px;line-height:1.5;min-height:87px;margin-bottom:18px;padding-bottom:16px;border-bottom:3px solid var(--blue);">教室利用に特化</div>
+          <ul class="clean" style="margin-top:6px;">
+            <li style="font-size:21px;margin-bottom:16px;">適度な<strong>AIの便利さ</strong></li>
+            <li style="font-size:21px;margin-bottom:16px;"><strong>カリキュラム連動</strong></li>
+            <li style="font-size:21px;margin-bottom:0;">作品共有による<strong>遊び合い</strong></li>
+          </ul>
+        </div>
+        <div class="card" style="position:relative;overflow:hidden;border-top:6px solid var(--ink);padding:36px 38px;display:flex;flex-direction:column;">
+          <span class="display" style="position:absolute;top:12px;right:20px;font-size:120px;color:var(--ink);opacity:.07;line-height:1;">03</span>
+          <div class="tag ink" style="margin-bottom:20px;">FEATURE 03</div>
+          <div class="display" style="font-size:29px;line-height:1.5;min-height:87px;margin-bottom:18px;padding-bottom:16px;border-bottom:3px solid var(--ink);">安全管理</div>
+          <ul class="clean" style="margin-top:6px;">
+            <li style="font-size:21px;margin-bottom:16px;"><strong>AIのログ</strong>を確認</li>
+            <li style="font-size:21px;margin-bottom:0;"><strong>NGワード</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7-4. AIの中で、なぜバイブコーディングか？ ============ -->
+  <section class="slide" data-label="why-vibe-coding">
+    <h2 style="font-size:50px;margin-bottom:0;">AIの中で、なぜバイブコーディングか？</h2>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:30px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+        <div class="card" style="padding:34px 40px;">
+          <div style="font-size:26px;font-weight:900;line-height:1.5;margin-bottom:20px;">ゲーム創作が最強の学び</div>
+          <ul class="clean">
+            <li style="font-size:21px;margin-bottom:14px;">「AIツールの使用スキル」は<strong>すぐ陳腐化</strong>する。</li>
+            <li style="font-size:21px;margin-bottom:14px;">スライド作成などは子どもが<strong>意欲的にならない</strong>。</li>
+            <li style="font-size:21px;margin-bottom:0;">講師の<strong>学習コストも低い</strong></li>
+          </ul>
+        </div>
+        <div class="card" style="padding:34px 40px;">
+          <div style="font-size:26px;font-weight:900;line-height:1.5;margin-bottom:20px;">AIの進化により影響を受けないか</div>
+          <ul class="clean">
+            <li style="font-size:21px;margin-bottom:14px;">もう、<strong>十分に進化した</strong>。</li>
+            <li style="font-size:21px;margin-bottom:0;">これ以上便利なAIができても、<strong>教育的な効果の差異はない</strong>。</li>
+          </ul>
+        </div>
+      </div>
+      <p class="display" style="font-size:32px;line-height:1.8;text-align:center;">
+        AIモデルやプロンプトのチューニングは発生するとしても、<br>
+        あるいはカリキュラムをブラッシュアップするとしても、<br>
+        <span class="marker">ベースの学びは大きく変わらない</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 7. 何が成長するの？ ============ -->
+  <section class="slide" data-label="growth">
+    <h2 style="font-size:48px;margin-bottom:0;">バイブコーディングのレッスン</h2>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+    <div class="card" style="padding:30px 44px;">
+      <div style="font-size:27px;font-weight:900;margin-bottom:20px;">導入時に感じた不安</div>
+      <ul class="clean">
+        <li style="font-size:22px;color:#4A4E58;margin-bottom:14px;">漠然と子どもが好き勝手つくっているだけでは……</li>
+        <li style="font-size:22px;color:#4A4E58;margin-bottom:14px;">子どもが成長している実感がない</li>
+        <li style="font-size:22px;color:#4A4E58;margin-bottom:0;">指導の方向性がピンとこない</li>
+      </ul>
+    </div>
+    <div class="fragment">
+      <div class="down-arrow">▼</div>
+      <p class="display" style="font-size:40px;line-height:1.5;text-align:center;margin-bottom:34px;">
+        「誰でも作れる」<span style="color:var(--blue);">≠</span>「誰でも<span class="marker">“いいもの・すごいもの”</span>を作れる」
+      </p>
+    </div>
+    <p class="display fragment" style="font-size:38px;line-height:1.8;text-align:center;">
+      “いいもの・すごいもの”を作れる人とは？<br>
+      <span class="marker">そのためのスキル、必要な学びを体系化</span>
+    </p>
+    </div>
+  </section>
+
+  <!-- ============ 8-2. 4つの評価軸（前回講演 page8 より） ============ -->
+  <section class="slide" data-label="eval-axes">
+    <h2>4つの評価軸</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;flex:1;align-content:center;">
+      <div class="card" style="display:flex;align-items:center;gap:30px;padding:38px 46px;">
+        <span class="display" style="font-size:52px;color:var(--blue);line-height:1;">01</span>
+        <span style="font-size:34px;font-weight:700;line-height:1.35;">企画・設計する力</span>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:30px;padding:38px 46px;">
+        <span class="display" style="font-size:52px;color:var(--blue);line-height:1;">02</span>
+        <span style="font-size:34px;font-weight:700;line-height:1.35;">構築・検証・修正する力</span>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:30px;padding:38px 46px;">
+        <span class="display" style="font-size:52px;color:var(--blue);line-height:1;">03</span>
+        <span style="font-size:34px;font-weight:700;line-height:1.35;">AI・テクノロジーの特性理解</span>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:30px;padding:38px 46px;">
+        <span class="display" style="font-size:52px;color:var(--blue);line-height:1;">04</span>
+        <span style="font-size:34px;font-weight:700;line-height:1.35;">やりきる力</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8-3. スキル・レッスンの具体例（前回講演 page9 より） ============ -->
+  <section class="slide" data-label="skill-lesson">
+    <h2 style="font-size:48px;margin-bottom:28px;">スキル・レッスンの具体例</h2>
+    <table class="skill">
+      <thead>
+        <tr>
+          <th style="width:300px;">評価軸</th>
+          <th style="width:380px;">スキル</th>
+          <th>レッスン例</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="2" style="font-weight:700;background:rgba(43,73,255,.06);vertical-align:middle;">企画・設計する力</td>
+          <td>何をつくるかを考える</td>
+          <td>ベースのゲームにオリジナル機能を追加する</td>
+        </tr>
+        <tr>
+          <td>企画を具体化できる</td>
+          <td>お手本どおりの作品に挑戦</td>
+        </tr>
+        <tr>
+          <td rowspan="2" style="font-weight:700;background:rgba(43,73,255,.06);vertical-align:middle;">構築・検証・修正する力</td>
+          <td>バグを見つける</td>
+          <td>バグのある教材を渡し、発見させる</td>
+        </tr>
+        <tr>
+          <td>修正したい箇所のみ修正する</td>
+          <td>類似した敵のうち1つだけ動きを変える</td>
+        </tr>
+        <tr>
+          <td rowspan="2" style="font-weight:700;background:rgba(43,73,255,.06);vertical-align:middle;">AI・テクノロジーの特性理解</td>
+          <td>データ保存の仕組みを知る</td>
+          <td>最高得点保存をつくる</td>
+        </tr>
+        <tr>
+          <td>スレッドをクリアする</td>
+          <td>自由創作の中で声がけする</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700;background:rgba(43,73,255,.06);vertical-align:middle;">やりきる力</td>
+          <td colspan="2" style="color:#4A4E58;">自由創作の中で声がけする</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 8-4. 教材としての魅力 ============ -->
+  <section class="slide" data-label="as-material">
+    <h2 style="margin-bottom:0;">教材としての魅力</h2>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-bottom:44px;">
+      <div class="card" style="text-align:center;padding:38px 30px;"><div class="display" style="font-size:44px;color:var(--blue);">低い床</div><p class="note" style="margin-top:12px;font-size:21px;">誰でもすぐ始められる</p></div>
+      <div class="card" style="text-align:center;padding:38px 30px;"><div class="display" style="font-size:44px;color:var(--blue);">高い天井</div><p class="note" style="margin-top:12px;font-size:21px;">本格的なプロダクトまで届く</p></div>
+      <div class="card" style="text-align:center;padding:38px 30px;"><div class="display" style="font-size:44px;color:var(--blue);">広い壁</div><p class="note" style="margin-top:12px;font-size:21px;">多様な作品・表現が生まれる</p></div>
+    </div>
+    <p class="body-l" style="margin-bottom:26px;">スクラッチの理念だが、<strong>スクラッチ以上に強力。</strong></p>
+    <p class="display" style="font-size:36px;line-height:1.55;color:var(--blue);">
+      <span style="background:linear-gradient(transparent 62%,var(--yellow) 62%);">楽しく子どもが前を向いて成長に向き合える、最高の教材</span>
+    </p>
+    </div>
+  </section>
+
+  <!-- ============ 9. あらゆる子どもに価値提供できる ============ -->
+  <section class="slide" data-label="per-kid">
+    <h2 style="margin-bottom:0;">あらゆる子どもに価値提供できる</h2>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;">
+      <div class="card" style="padding:26px 40px;">
+        <div class="tag fill">多くのお子さま</div>
+        <ul class="clean" style="margin-top:4px;">
+          <li style="margin-bottom:10px;">プログラミングで躓くところを<strong>乗り越えられる</strong>。</li>
+          <li style="margin-bottom:0;"><strong>すぐ成果が出る</strong>。<strong>夢中になれる</strong>。</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:26px 40px;">
+        <div class="tag">プログラミングが得意な子</div>
+        <ul class="clean" style="margin-top:4px;">
+          <li style="margin-bottom:10px;"><strong>圧倒的にすごいこと</strong>ができる。</li>
+          <li style="margin-bottom:0;">プログラミング以外の部分を<strong>深く学べる</strong>。</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:26px 40px;">
+        <div class="tag ink">課題を抱えている子</div>
+        <ul class="clean" style="margin-top:4px;">
+          <li style="margin-bottom:10px;"><strong>自信を持てる</strong>。<strong>学びを楽しめる</strong>。</li>
+          <li style="margin-bottom:0;">継続的に、<strong>終わりなく学び続けられる</strong>。</li>
+        </ul>
+      </div>
+      <p class="display" style="font-size:34px;line-height:1.6;text-align:center;margin-top:10px;">
+        プログラミングよりも、特性やタイプを選ばない。<span class="marker">万能な学習方法。</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 10. すべての子どもに共通する問い ============ -->
+  <section class="slide dark" data-label="question" style="align-items:center;justify-content:center;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;color:#A7ABB4;letter-spacing:.18em;margin-bottom:56px;">すべての子どもに共通する問い</div>
+    <div class="display" style="font-size:90px;letter-spacing:.03em;text-align:center;line-height:1.5;">
+      ドラえもんがいたら、<br><span style="color:var(--yellow);">何をしますか？</span>
+    </div>
+  </section>
+
+  <!-- ============ 11. バイブコーディング導入の効果 ============ -->
+  <section class="slide" data-label="after-intro">
+    <h2 style="margin-bottom:0;">バイブコーディング導入の効果</h2>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:34px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;width:100%;align-items:stretch;">
+        <div class="card" style="position:relative;overflow:hidden;border-top:6px solid var(--blue);padding:34px 36px;">
+          <span class="display" style="position:absolute;top:12px;right:20px;font-size:120px;color:var(--blue);opacity:.08;line-height:1;">01</span>
+          <div class="tag" style="margin-bottom:18px;">KIDS</div>
+          <div class="display" style="font-size:29px;line-height:1.5;margin-bottom:4px;">子どもの反応</div>
+          <div class="note" style="font-size:17px;margin-bottom:16px;padding-bottom:14px;border-bottom:3px solid var(--blue);">特に好反応なタイプ</div>
+          <ul class="clean" style="margin-top:6px;">
+            <li style="font-size:21px;margin-bottom:14px;">Scratchを<strong>難しく感じる</strong>子</li>
+            <li style="font-size:21px;margin-bottom:14px;">Scratchの<strong>限界を感じている</strong>子</li>
+            <li style="font-size:21px;margin-bottom:0;">高学年以上は<strong>夢中になりやすい</strong></li>
+          </ul>
+        </div>
+        <div class="card" style="position:relative;overflow:hidden;border-top:6px solid var(--blue);padding:34px 36px;">
+          <span class="display" style="position:absolute;top:12px;right:20px;font-size:120px;color:var(--blue);opacity:.08;line-height:1;">02</span>
+          <div class="tag" style="margin-bottom:18px;">PARENTS</div>
+          <div class="display" style="font-size:29px;line-height:1.5;margin-bottom:4px;">保護者の反応</div>
+          <div class="note" style="font-size:17px;margin-bottom:16px;padding-bottom:14px;border-bottom:3px solid var(--blue);">在校生</div>
+          <ul class="clean" style="margin-top:6px;">
+            <li style="font-size:21px;margin-bottom:14px;">作品を見ると<strong>非常に好反応</strong></li>
+            <li style="font-size:21px;margin-bottom:14px;">AIへの<strong>拒否反応はない</strong></li>
+            <li style="font-size:21px;margin-bottom:0;">上級生の成果を見せると<strong>驚く</strong></li>
+          </ul>
+        </div>
+        <div class="card" style="position:relative;overflow:hidden;border-top:6px solid var(--ink);padding:34px 36px;">
+          <span class="display" style="position:absolute;top:12px;right:20px;font-size:120px;color:var(--ink);opacity:.07;line-height:1;">03</span>
+          <div class="tag ink" style="margin-bottom:18px;">VOICES</div>
+          <div class="display" style="font-size:29px;line-height:1.5;margin-bottom:4px;">外部の保護者の声</div>
+          <div class="note" style="font-size:17px;margin-bottom:16px;padding-bottom:14px;border-bottom:3px solid var(--ink);">&nbsp;</div>
+          <ul class="clean" style="margin-top:6px;">
+            <li style="font-size:21px;margin-bottom:14px;"><strong>バイブを学ばせたい</strong></li>
+            <li style="font-size:21px;margin-bottom:14px;">プログラミングは<strong>いま必要なの？</strong></li>
+            <li style="font-size:21px;margin-bottom:0;">勉強に<strong>AIを活用したい</strong></li>
+          </ul>
+        </div>
+      </div>
+      <p class="display" style="font-size:36px;line-height:1.6;text-align:center;">
+        <span class="marker">継続率への貢献はかなり高いと予想</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 12. 集客 ============ -->
+  <section class="slide" data-label="marketing">
+    <h2 style="margin-bottom:26px;">保護者に魅力をどう伝えるか</h2>
+    <div style="background:rgba(255,210,63,.22);border:1px solid var(--yellow);border-radius:12px;padding:20px 30px;margin-bottom:32px;text-align:center;">
+      <span class="display" style="font-size:30px;">保護者によって、AIの理解度が大きく異なる</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;flex:1;min-height:0;">
+      <div class="card" style="padding:32px 38px;display:flex;flex-direction:column;">
+        <div class="tag">アーリーアダプター</div>
+        <div style="font-size:26px;font-weight:900;line-height:1.55;margin-bottom:20px;">AI教育が必要だと感じている層</div>
+        <ul class="clean" style="font-size:21px;">
+          <li style="font-size:21px;">保護者自身が<strong>AIへの興味が高い</strong>。</li>
+          <li style="font-size:21px;">バイブコーディングが<strong>刺さる</strong>。</li>
+          <li style="font-size:21px;">プログラミングから<strong>関心がスイッチしつつある</strong>。</li>
+        </ul>
+        <p style="margin-top:auto;border-top:1px solid var(--line);padding-top:20px;font-size:22px;font-weight:700;line-height:1.8;">
+          AIの教育的効果に疑問を感じている方もいるので、<span class="marker">教育感を伝える</span>。
+        </p>
+      </div>
+      <div class="card" style="padding:32px 38px;display:flex;flex-direction:column;">
+        <div class="tag fill">多くの保護者</div>
+        <div style="font-size:26px;font-weight:900;line-height:1.55;margin-bottom:20px;">バイブコーディングを知らない人も多い</div>
+        <ul class="clean" style="font-size:21px;">
+          <li style="font-size:21px;">漠然とした<strong>AIへの興味関心はある</strong></li>
+          <li style="font-size:21px;"><strong>60秒でゲームができるAI体験</strong>は驚く</li>
+          <li style="font-size:21px;">何より<strong>「子どもが凄いものを作った」体験</strong>が響く</li>
+        </ul>
+        <p style="margin-top:auto;border-top:1px solid var(--line);padding-top:20px;font-size:22px;font-weight:700;line-height:1.8;">
+          AIでできることへの興味関心はプログラミングのそれよりも高い。<br>
+          まだ感度が高まっていないが、<span class="marker">1年後にガラッと変わると予測する</span>。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 13. まとめと当社の考え方 ============ -->
+  <section class="slide" data-label="summary">
+    <h2>まとめと当社の考え方</h2>
+    <div style="display:flex;flex-direction:column;gap:52px;flex:1;justify-content:center;">
+      <p class="display" style="font-size:36px;line-height:1.8;">
+        プログラミング教育の価値は引き続き高いにしても、<br>
+        プログラミング教育市場は、<span class="marker">AIの波に飲み込まれる可能性は高い</span>。
+      </p>
+      <p class="display" style="font-size:36px;line-height:1.8;">
+        何より、AIでのゲーム開発・アプリ開発は面白く、<br>
+        <span class="marker">教育的価値は極めて高い</span>。
+      </p>
+      <p class="display" style="font-size:44px;line-height:1.7;text-align:center;margin-top:10px;color:var(--blue);">
+        ぜひ一緒にAI教育を盛り上げて行きましょう。
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 13-2. アルスタジオVの紹介（前回講演 page12 より） ============ -->
+  <section class="slide" data-label="ars-studio-v">
+    <h2>アルスタジオVの紹介</h2>
+    <p class="body-l" style="margin-bottom:36px;">プログラミング教室や学校などの<strong>教育機関に提供予定</strong></p>
+    <div class="card" style="border-top:6px solid var(--blue);">
+      <div class="card-head" style="font-size:30px;">ライセンス代</div>
+      <p class="display" style="font-size:48px;margin-bottom:22px;">
+        1アカウント <span style="color:var(--blue);">3,000円前後</span> <span style="font-size:28px;color:var(--gray);">/月</span>
+        <span style="font-size:26px;color:var(--gray);">で検討中</span>
+      </p>
+      <ul class="clean" style="font-size:24px;">
+        <li>教材代、システム利用料込み</li>
+        <li>利用可能なAIトークンは標準的な1か月使用量程度の想定</li>
+        <li>それを超えた場合、トークンの追加購入が可能</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 13-3. ご案内・お問い合わせ（前回講演 page13 より） ============ -->
+  <section class="slide" data-label="contact">
+    <h2>ご案内・お問い合わせ</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;flex:1;">
+      <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;border-top:6px solid var(--blue);">
+        <div class="tag" style="align-self:center;margin-bottom:0;">FORM</div>
+        <div class="display" style="font-size:36px;line-height:1.35;text-align:center;">アンケートにご回答ください</div>
+        <img src="img/form-qr.png" alt="アンケートフォーム QRコード" style="width:250px;height:250px;object-fit:contain;background:#fff;border-radius:8px;">
+        <p style="font-size:21px;line-height:1.6;text-align:center;font-weight:500;">
+          ご回答いただいた方に、<br><span style="background:linear-gradient(transparent 56%,var(--yellow) 56%);font-weight:700;">アルスタジオVのデモアカウント</span>を提供します
+        </p>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;">
+        <div class="tag" style="align-self:center;margin-bottom:0;">LINE</div>
+        <div class="display" style="font-size:28px;line-height:1.4;text-align:center;">アルスクール公式LINE</div>
+        <img src="img/line-qr.png" alt="アルスクール公式LINE QRコード" style="width:250px;height:250px;object-fit:contain;background:#fff;border-radius:8px;">
+        <p style="font-size:21px;line-height:1.6;text-align:center;font-weight:500;">
+          AI×子どもの学びの最新情報を定期配信。<br>ぜひ<span style="background:linear-gradient(transparent 56%,var(--yellow) 56%);font-weight:700;">友だち登録</span>してください
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 14. Closing ============ -->
+  <section class="slide dark" data-label="closing" style="align-items:center;justify-content:center;">
+    <div class="display" style="font-size:72px;">ご清聴ありがとうございました</div>
+    <div style="margin-top:56px;font-size:26px;line-height:2.2;color:#A7ABB4;text-align:center;">
+      アルスクール株式会社　<span style="color:var(--yellow);font-weight:700;">arschool.co.jp</span><br>
+      バイブコーディング環境「アルスタジオV」は教育機関に提供予定です
+    </div>
+  </section>
+
+</div>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let cur=0;
+
+  // footer (page number) を各スライドに自動付与
+  slides.forEach((s,i)=>{
+    const f=document.createElement('div');
+    f.className='footer';
+    f.innerHTML=`<span class="bar"></span><span>${String(i+1).padStart(2,'0')} / ${String(slides.length).padStart(2,'0')}</span>`;
+    s.appendChild(f);
+  });
+
+  // #3 のようなハッシュがあればそのページから開始（file:// 等で失敗しても無視）
+  try{
+    const h=parseInt(location.hash.replace('#',''),10);
+    if(!isNaN(h)&&h>=1&&h<=slides.length) cur=h-1;
+  }catch(e){}
+
+  function curFragments(){
+    return [...slides[cur].querySelectorAll('.fragment')];
+  }
+  function show(n){
+    cur=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    // スライド切替時はフラグメントを全て隠す
+    slides[cur].querySelectorAll('.fragment').forEach(f=>f.classList.remove('revealed'));
+    try{history.replaceState(null,'','#'+(cur+1));}catch(e){}
+  }
+  // 未表示のフラグメントが残っていれば1つ表示。なければtrueを返す（=全部出した）
+  function revealNext(){
+    const f=curFragments().find(el=>!el.classList.contains('revealed'));
+    if(f){f.classList.add('revealed');return false;}
+    return true;
+  }
+  function next(){
+    // まずフラグメントを出し切ってから次ページへ
+    if(revealNext()) show(cur+1);
+  }
+  function prev(){show(cur-1);}
+
+  // クリックは「追加表示」専用。ページ送りはしない。
+  document.addEventListener('click',e=>{ revealNext(); });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'||e.key==='PageDown'){e.preventDefault();next();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'||e.key==='Backspace'){e.preventDefault();prev();}
+    else if(e.key==='Home') show(0);
+    else if(e.key==='End') show(slides.length-1);
+  });
+
+  // 16:10 ステージを画面にフィット（letterbox / pillarbox）
+  const stage=document.getElementById('stage');
+  function fit(){
+    const s=Math.min(window.innerWidth/1600,window.innerHeight/1000);
+    stage.style.transform=`scale(${s})`;
+  }
+  window.addEventListener('resize',fit);
+  fit();
+  show(cur);
+</script>
+</body>
+</html>
